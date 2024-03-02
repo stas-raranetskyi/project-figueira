@@ -2,8 +2,8 @@ name: Build, Test and Lint
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
+  pull_request:
+    branches: [ main ]
     paths-ignore:
       - '.github/**'
 
@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [21.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@main
@@ -27,3 +27,5 @@ jobs:
         run: yarn build
       - name: lint
         run: yarn lint
+      - name: test
+        run: yarn test:ci

@@ -1,8 +1,17 @@
 {
-  "extends": ["next/core-web-vitals", "prettier", "plugin:prettier/recommended"],
-  "plugins": ["simple-import-sort", "prettier"],
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:prettier/recommended",
+    "plugin:storybook/recommended"
+  ],
+  "plugins": [
+    "simple-import-sort",
+    "prettier"
+  ],
   "rules": {
     "prettier/prettier": "error",
     "simple-import-sort/imports": "warn"
-  }
+  },
+  "ignorePatterns": ["!.storybook"]
 }
