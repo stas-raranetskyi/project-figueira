@@ -21,10 +21,10 @@ const TranslationsProvider: FC<Props> = ({ children, locale, namespaces, resourc
 	return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
 };
 
-export const withTranslationsProvider = (WrappedComponent: React.ComponentType | NextPage<any>, namespaces: string[]) => {
+export const withTranslationsProvider = (WrappedComponent: React.ComponentType<any> | NextPage<any>, namespaces: string[]) => {
 	const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
-	const ComponentWithTheme = (props: any) => {
+	const ComponentTranslationsProvider = (props: any) => {
 		return (
 			<TranslationsProvider namespaces={namespaces}>
 				<WrappedComponent {...props} />
@@ -32,9 +32,9 @@ export const withTranslationsProvider = (WrappedComponent: React.ComponentType |
 		);
 	};
 
-	ComponentWithTheme.displayName = `withTranslationsProvider(${displayName})`;
+	ComponentTranslationsProvider.displayName = `withTranslationsProvider(${displayName})`;
 
-	return ComponentWithTheme;
+	return ComponentTranslationsProvider;
 };
 
 export default TranslationsProvider;

@@ -6,7 +6,8 @@ import i18nConfig from '@/configs/i18n.config';
 export function middleware(req: NextRequest) {
 	const basicAuth = req.headers.get('authorization');
 	const url = req.nextUrl;
-	let canView = false;
+	let hostname = req.headers.get('host')!.replace('.localhost:3000', `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
+	let canView = hostname.includes('localhost');
 
 	if (basicAuth) {
 		const authValue = basicAuth.split(' ')[1];
@@ -20,8 +21,6 @@ export function middleware(req: NextRequest) {
 		return NextResponse.rewrite(new URL('/api/basic-auth', req.url));
 	}
 
-	let hostname = req.headers.get('host')!.replace('.localhost:3000', `.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`);
-	console.log(hostname);
 	if (hostname.includes('---') && hostname.endsWith(`.${process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX}`)) {
 		hostname = `${hostname.split('---')[0]}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`;
 	}
