@@ -2,7 +2,7 @@
 import loadable from '@loadable/component';
 import React, { Suspense } from 'react';
 
-import { EditorElement } from '@/signals/editor';
+import { EditorElement, ElementTypeEnum } from '@/types/editor';
 
 type Props = {
 	element: EditorElement;
@@ -10,11 +10,19 @@ type Props = {
 
 const capitalizeFirstLetter = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);
 
+const emailElements = [ElementTypeEnum.EMAIL_ROOT, ElementTypeEnum.EMAIL_ROW, ElementTypeEnum.EMAIL_CELL];
+
 const ElementBody = loadable(
-	(props: Props) =>
-		import(`@/components/editor/emailElements/${capitalizeFirstLetter(props.element.type)}`).catch(() => ({
+	(props: Props) => {
+		if (emailElements.includes(props.element.type as ElementTypeEnum)) {
+			return import(`./emailElements/${capitalizeFirstLetter(props.element.type)}`).catch(() => ({
+				default: () => null,
+			}));
+		}
+		return import(`./commonElements/${capitalizeFirstLetter(props.element.type)}`).catch(() => ({
 			default: () => null,
-		})),
+		}));
+	},
 	{
 		cacheKey: (props: Props) => props.element.type,
 	},

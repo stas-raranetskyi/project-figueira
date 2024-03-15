@@ -1,13 +1,15 @@
 'use client';
+import { useSignals } from '@preact/signals-react/runtime';
 import React from 'react';
 
-import Element from '@/components/editor/EmailElement';
-import { editor } from '@/signals/editor';
+import Element from '@/features/editor/EmailElement';
+import { editorElements } from '@/signals/editor';
 
 const EditorBody = () => {
+	useSignals();
 	return (
 		<div style={{ flex: '100%', border: '1px solid' }}>
-			{editor.value.state.elements.map((el) => (
+			{editorElements.value.map((el) => (
 				<Element element={el} key={el.id} />
 			))}
 		</div>

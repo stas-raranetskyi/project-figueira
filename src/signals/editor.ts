@@ -1,74 +1,51 @@
-import { signal } from '@preact/signals-react';
-import React from 'react';
+import { effect, signal } from '@preact/signals-react';
 
-import { createElementByType } from '@/utils/editor';
+import { DeviceEnum, EditorElement, ElementId, ElementStyles, ElementTypeEnum } from '@/types/editor';
+import { addAnElement, createElementByType, updateAnElement } from '@/utils/editor';
 
-enum DeviceEnum {
-	DESKTOP = 'Desktop',
-	MOBILE = 'Mobile',
-	TABLET = 'Tablet',
-}
-
-export enum ElementTypeEnum {
-	TEXT = 'text',
-	EMAIL_ROW = 'emailRow',
-	// TODO add more types
-	// ...
-}
-
-export type ElementAttributesType<T> = React.HTMLProps<T> & React.HTMLAttributes<T>;
-export type ElementAttributes<T> = Omit<ElementAttributesType<T>, 'style'>;
-
-export type EditorElement<T = HTMLElement> = {
-	id: string;
-	styles: React.CSSProperties;
-	type: ElementTypeEnum;
-	attributes: ElementAttributes<T>;
-	children: EditorElement<T>[];
+type HistoryState = {
+	history: EditorElement[];
+	currentIndex: number;
 };
 
-type Editor = {
-	elements: EditorElement[];
-	selectedElement?: EditorElement;
+type EditorSettings = {
 	device: DeviceEnum;
 	previewMode: boolean;
 };
 
-type HistoryState = {
-	history: Editor[];
-	currentIndex: number;
-};
+export const editorElements = signal<EditorElement[]>([
+	createElementByType(ElementTypeEnum.EMAIL_ROOT, [
+		createElementByType(ElementTypeEnum.EMAIL_ROW, [
+			createElementByType(ElementTypeEnum.EMAIL_CELL, [
+				createElementByType(ElementTypeEnum.IMAGE),
+				createElementByType(ElementTypeEnum.PARAGRAPH),
+			]),
+		]),
+	]),
+]);
 
-type EditorState = {
-	state: Editor;
-	history: HistoryState;
-};
-
-export const editor = signal<EditorState>({
-	state: {
-		elements: [createElementByType(ElementTypeEnum.EMAIL_ROW)],
-		device: DeviceEnum.DESKTOP,
-		previewMode: false,
-	},
-	history: {
-		history: [],
-		currentIndex: -1,
-	},
+export const editorHistory = signal<HistoryState>({
+	history: [],
+	currentIndex: -1,
 });
 
-const addAnElement = (elements: EditorElement[], targerId: EditorElement['id'], el: EditorElement) => {
-	for (const element of elements) {
-		if (element.id === targerId) {
-			element.children.push(el);
-			return;
-		}
-		if (element.children.length) {
-			addAnElement(element.children, targerId, el);
-		}
-	}
+export const editorSettings = signal<EditorSettings>({
+	device: DeviceEnum.DESKTOP,
+	previewMode: false,
+});
+
+export const editorSelectedElement = signal<EditorElement | undefined>(undefined);
+
+export const addElement = (targerId: ElementId, elementType?: ElementTypeEnum) => {
+	if (!elementType) return;
+	editorElements.value = addAnElement(editorElements.value, targerId, createElementByType(elementType));
 };
 
-export const addElement = (targerId: EditorElement['id'], elementType?: ElementTypeEnum) => {
-	if (!elementType) return;
-	addAnElement(editor.value.state.elements, targerId, createElementByType(elementType));
+export const updateElement = (id: ElementId, elementData: Partial<EditorElement>) => {
+	editorElements.value = updateAnElement(editorElements.value, id, elementData);
+	if (editorSelectedElement.value) editorSelectedElement.value = updateAnElement([editorSelectedElement.value], id, elementData)[0];
+};
+
+export const selectElement = (element: EditorElement) => {
+	editorSelectedElement.value = editorSelectedElement.value?.id === element.id ? undefined : element;
 };

@@ -2,12 +2,12 @@
 
 import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import React, { useId } from 'react';
-import { v4 as uuid } from 'uuid';
 
 import EditorBody from '@/features/editor/EditorBody';
 import EditorHeader from '@/features/editor/EditorHeader';
 import EditorSidebar from '@/features/editor/EditorSidebar';
-import { addElement, ElementTypeEnum } from '@/signals/editor';
+import { addElement } from '@/signals/editor';
+import { ElementTypeEnum } from '@/types/editor';
 
 const Editor = () => {
 	const mouseSensor = useSensor(MouseSensor, {
@@ -27,6 +27,7 @@ const Editor = () => {
 		if (event.over === null) {
 			return;
 		}
+		if (event.active.data.current?.type === ElementTypeEnum.EMAIL_CELL && event.over.data.current?.type !== ElementTypeEnum.EMAIL_ROW) return;
 		addElement(event.over.id as string, event.active.data.current?.type);
 	};
 
