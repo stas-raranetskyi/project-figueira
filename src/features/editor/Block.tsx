@@ -3,7 +3,7 @@
 import { DragOverlay, useDraggable } from '@dnd-kit/core';
 import React, { PropsWithChildren } from 'react';
 
-import { ElementTypeEnum } from '@/signals/editor';
+import { ElementTypeEnum } from '@/types/editor';
 
 type Props = {
 	type: ElementTypeEnum;
